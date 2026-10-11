@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Menu, X, Sun, Moon, MapPin, Clock, Phone, Mail, Play, Heart, HandHeart, Users, Baby,
   BookOpen, Radio, Send, ArrowUpRight, MessageSquare,
@@ -156,6 +156,7 @@ function Home() {
           <span className="link">Send a request <ArrowUpRight size={16} /></span>
         </a>
       </section>
+      <Divider kind="crown" />
 
       <section className="wrap section">
         <div className="sec-head"><h2>Latest messages</h2><Link to="sermons" className="link">All sermons <ArrowUpRight size={16} /></Link></div>
@@ -163,16 +164,19 @@ function Home() {
           {sermons.slice(0, 5).map((s, i) => <SermonCard key={s.id || s.title} s={s} i={i} />)}
         </div>
       </section>
+      <Divider kind="sun" />
 
       <section className="wrap section">
         <div className="sec-head"><h2>What's on</h2><Link to="events" className="link">Full calendar <ArrowUpRight size={16} /></Link></div>
         <EventList items={events.slice(0, 5)} />
       </section>
+      <Divider kind="sea" band />
 
       <section className="wrap section">
         <div className="sec-head"><h2>Find your place</h2><Link to="ministries" className="link">All ministries <ArrowUpRight size={16} /></Link></div>
         <div className="grid3"><MinistryTiles /></div>
       </section>
+      <Divider kind="ember" />
 
       <section className="wrap section">
         <div className="verse-block">
@@ -209,6 +213,7 @@ function EventList({ items }) {
   );
 }
 
+const GRAD = { children: "sun", men: "sky", ladies: "ember" };
 const ICONS = { children: Baby, men: Users, ladies: Heart };
 const MCOL = { children: "sq-yellow", men: "sq-blue", ladies: "sq-coral" };
 function MinistryTiles() {
@@ -224,6 +229,9 @@ function MinistryTiles() {
     );
   });
 }
+
+// Gradient dividers use the official gradient pairs from the brand guide.
+const Divider = ({ kind = "sun", band = false }) => <div className={`wrap divider ${band ? "band" : "line"} g-${kind}`} aria-hidden="true" />;
 
 const PageHead = ({ title, sub, kicker }) => (
   <section className="wrap page-head">
@@ -248,10 +256,12 @@ function About() {
           {SQUARES.map(({ label, icon: I, cls }) => <div className={`sq ${cls}`} key={label}><I size={24} /><span>{label}</span></div>)}
         </div>
       </section>
+      <Divider kind="crown" />
       <section className="wrap section">
         <h2>What we believe</h2>
         <div className="grid2">{beliefs.map((b, i) => <div className="belief" key={b}><b>0{i + 1}</b><p>{b}</p></div>)}</div>
       </section>
+      <Divider kind="sun" />
       <section className="wrap section">
         <h2>Meet our team</h2>
         <div className="grid3 team-grid">
@@ -290,11 +300,13 @@ function Ministries() {
   return (
     <>
       <PageHead kicker="Get involved" title="Ministries" sub="Find your place to belong and grow." />
-      {ministries.map((m) => {
+      {ministries.map((m, idx) => {
         const I = ICONS[m.id];
         const list = coming.filter((e) => m.match.some((k) => e.title.toLowerCase().includes(k)));
         return (
-          <section className="wrap section ministry" key={m.id}>
+          <Fragment key={m.id}>
+          {idx > 0 && <Divider kind={GRAD[m.id]} />}
+          <section className="wrap section ministry">
             <div className={`ministry-side ${MCOL[m.id]}`}>
               <I size={34} />
               <h2>{m.title}</h2>
@@ -311,6 +323,7 @@ function Ministries() {
               {list.length > 0 && (<><h3>Upcoming</h3><EventList items={list} /></>)}
             </div>
           </section>
+          </Fragment>
         );
       })}
     </>

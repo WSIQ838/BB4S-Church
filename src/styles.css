@@ -269,3 +269,21 @@ main > .section.info-row { padding-top: 48px; align-items: start; }
   .nav a:not(.btn) { padding: 14px 4px; border: 0; }
   .nav .btn { margin: 8px 0 0; justify-content: center; }
 }
+
+/* gradient dividers: the official gradient pairs from the brand guide */
+.g-sun   { --g: linear-gradient(90deg, #f8d562, #ef6736); }   /* Aimee Yellow to Orange */
+.g-crown { --g: linear-gradient(90deg, #795ebc, #b67ee7); }   /* Crown Purple to Aimee Purple */
+.g-sea   { --g: linear-gradient(90deg, #a1cbb5, #1f5986); }   /* Blue Green to Dark Blue */
+.g-mist  { --g: linear-gradient(90deg, #a1cbb5, #b67ee7); }   /* Blue Green to Aimee Purple */
+.g-sky   { --g: linear-gradient(90deg, #34a7f7, #4158f8); }   /* Aimee Blue to Cool Blue */
+.g-ember { --g: linear-gradient(90deg, #ff2735, #b67ee7); }   /* Aimee Red to Aimee Purple */
+.divider { background: var(--g); display: block; }
+.divider.line { height: 6px; border-radius: 99px; }
+.divider.band { height: 64px; border-radius: 18px; clip-path: polygon(0 28%, 14% 0, 100% 0, 100% 62%, 86% 100%, 0 100%); }
+.section:has(+ .divider) { padding-bottom: calc(var(--gap-section) * .6); }
+.divider { margin-bottom: calc(var(--gap-section) * .6); }
+.divider + .section { padding-top: 0; }
+/* short accent bar under every page title */
+.page-head::after { content: ""; display: block; width: 120px; height: 6px; border-radius: 99px; margin-top: 26px; background: linear-gradient(90deg, #f8d562, #ef6736); }
+[data-theme="dark"] .divider.line { opacity: .9; }
+.bento + .divider { margin-top: 64px; }
