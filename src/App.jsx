@@ -12,7 +12,7 @@ const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/
 const upcoming = (list) => list.filter((e) => e.date >= today()).sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
 
 const NAV = [
-  ["about", "About"], ["ministries", "Ministries"], ["events", "Events"],
+  ["home", "Home"], ["about", "About"], ["ministries", "Ministries"], ["events", "Events"],
   ["sermons", "Sermons"], ["contact", "Contact"],
 ];
 

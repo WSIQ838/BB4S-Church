@@ -259,3 +259,13 @@ main > .section.info-row { padding-top: 48px; align-items: start; }
 
 /* footer is always dark: colour logo with the brighter brand supporting colours */
 .footer { --logo-cross: #ff2735; --logo-dove: #f8d562; --logo-cup: #34a7f7; --logo-crown: #b67ee7; }
+
+/* menu: keep text on one line, and collapse into the hamburger menu before it gets crowded */
+.btn, .wm b, .wm small, .nav a { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .burger { display: block; }
+  .nav { position: absolute; top: 112px; left: 0; right: 0; background: var(--bg); flex-direction: column; align-items: stretch; padding: 8px 20px 20px; display: none; border-bottom: 1px solid var(--line); box-shadow: 0 20px 30px rgba(0,0,0,.12); }
+  .nav.open { display: flex; }
+  .nav a:not(.btn) { padding: 14px 4px; border: 0; }
+  .nav .btn { margin: 8px 0 0; justify-content: center; }
+}
