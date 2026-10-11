@@ -12,7 +12,7 @@ export const church = {
   email: "info@bb4square.org",
   office: "Monday to Thursday, 10 am to 6 pm",
   textGive: { word: "GIVE", number: "(844) 945-2304" },
-  giveUrl: "https://bb4square.org/give",
+  giveUrl: "https://give.tithe.ly/?locationId=2c27cad7-96bb-4a55-acb7-85391d79a755&giveButtonText=Give%20Online%20Now",
   liveUrl: "https://bb4square.org/live",
 };
 
