@@ -1,0 +1,60 @@
+{
+  "name": "VisitorSignup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Visitor name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone"
+    },
+    "party_size": {
+      "type": "string",
+      "description": "How many people are coming"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date they plan to visit"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Questions or anything we should know"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted"
+      ],
+      "default": "new",
+      "description": "Follow-up status"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
