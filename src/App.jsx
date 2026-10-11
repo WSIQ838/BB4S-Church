@@ -290,7 +290,38 @@ function Visit() {
       <section className="wrap section grid2">
         {items.map(([I, h, t]) => <div className="info-card" key={h}><I /><h3>{h}</h3><p>{t}</p></div>)}
       </section>
+      <section className="wrap section two">
+        <div className="prose">
+          <h2>Let us know you're coming</h2>
+          <p>We'd love to say hello. Tell us when you're planning to visit and a greeter will watch for you. It only takes a minute, and we'll only use your details to follow up about your visit.</p>
+        </div>
+        <VisitForm />
+      </section>
     </>
+  );
+}
+
+function VisitForm() {
+  const [state, setState] = useState("idle");
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget));
+    Object.keys(data).forEach((k) => data[k] === "" && delete data[k]);
+    setState("sending");
+    try { await submit("VisitorSignup", data); setState("sent"); } catch { setState("error"); }
+  };
+  if (state === "sent") return <div className="info-card"><Send /><h3>Thank you!</h3><p>We can't wait to meet you. See you on Sunday!</p></div>;
+  return (
+    <form className="form info-card" onSubmit={onSubmit}>
+      <label>Your name<input name="name" required /></label>
+      <label>Email<input name="email" type="email" /></label>
+      <label>Phone<input name="phone" type="tel" /></label>
+      <label>How many are coming?<input name="party_size" inputMode="numeric" /></label>
+      <label>Which Sunday?<input name="visit_date" type="date" /></label>
+      <label>Questions or anything we should know<textarea name="notes" rows={3} /></label>
+      <button className="btn btn-coral" type="submit" disabled={state === "sending"}>{state === "sending" ? "Sending…" : "Let us know"}</button>
+      {state === "error" && <p className="form-error">Sorry, that didn't go through. Please call us at {church.phone}.</p>}
+    </form>
   );
 }
 
