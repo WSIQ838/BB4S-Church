@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@base44/sdk";
 
 // Base44 app that stores the church's sermons, events, team, prayer requests and messages.
-export const APP_ID = "6acc071ecc184f151157af6d";
+export const APP_ID = "6acc15606536bcb3d18f832f";
 export const base44 = createClient({ appId: APP_ID, requiresAuth: false });
 
 /**

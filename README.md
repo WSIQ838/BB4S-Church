@@ -14,4 +14,4 @@ npm run dev     # local preview
 npm run build   # production build in dist/
 ```
 
-Base44 app ID: `6acc071ecc184f151157af6d`
+Base44 app ID: `6acc15606536bcb3d18f832f`
