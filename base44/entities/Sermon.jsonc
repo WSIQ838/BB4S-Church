@@ -1,0 +1,65 @@
+{
+  "name": "Sermon",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Sermon title"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date preached"
+    },
+    "speaker": {
+      "type": "string",
+      "description": "Speaker name"
+    },
+    "series": {
+      "type": "string",
+      "description": "Series name"
+    },
+    "scripture": {
+      "type": "string",
+      "description": "Main scripture reference"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "YouTube or video link"
+    },
+    "audio_url": {
+      "type": "string",
+      "description": "Audio or podcast link"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short description"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show on the website"
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

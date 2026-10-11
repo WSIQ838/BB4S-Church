@@ -1,0 +1,55 @@
+{
+  "name": "PrayerRequest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name (optional)"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email (optional)"
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "Private. Pastors only",
+        "OK to share with the congregation"
+      ],
+      "description": "Who may see the request"
+    },
+    "request": {
+      "type": "string",
+      "description": "The prayer request"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "prayed"
+      ],
+      "default": "new",
+      "description": "Follow-up status"
+    }
+  },
+  "required": [
+    "request"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "ContactMessage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Sender name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Sender email"
+    },
+    "message": {
+      "type": "string",
+      "description": "Message"
+    },
+    "handled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Staff has replied"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "message"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

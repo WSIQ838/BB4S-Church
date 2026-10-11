@@ -1,0 +1,53 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event date"
+    },
+    "time": {
+      "type": "string",
+      "description": "Time, e.g. 11:00 AM"
+    },
+    "place": {
+      "type": "string",
+      "description": "Where it happens"
+    },
+    "description": {
+      "type": "string",
+      "description": "More details"
+    },
+    "published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show on the website"
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
