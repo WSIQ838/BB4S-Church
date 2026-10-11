@@ -129,12 +129,6 @@ function Home() {
         </div>
       </section>
 
-      <div className="marquee" aria-hidden="true">
-        <div>{Array.from({ length: 2 }).map((_, k) => (
-          <span key={k}>Sundays 11 AM ✦ Bible Study 10 AM ✦ 1901 W. Beverly Blvd. ✦ Everyone is welcome ✦ Nursery &amp; kids' classes ✦ </span>
-        ))}</div>
-      </div>
-
       <section className="wrap bento">
         <div className="tile tile-big">
           <p className="kicker">This Sunday</p>
@@ -290,12 +284,38 @@ function Visit() {
   );
 }
 
-const Ministries = () => (
-  <>
-    <PageHead kicker="Get involved" title="Ministries" sub="Find your place to belong and grow." />
-    <section className="wrap section"><div className="grid3"><MinistryTiles /></div></section>
-  </>
-);
+function Ministries() {
+  const { items } = useCollection("Event", eventsFallback, "date");
+  const coming = upcoming(items);
+  return (
+    <>
+      <PageHead kicker="Get involved" title="Ministries" sub="Find your place to belong and grow." />
+      {ministries.map((m) => {
+        const I = ICONS[m.id];
+        const list = coming.filter((e) => m.match.some((k) => e.title.toLowerCase().includes(k)));
+        return (
+          <section className="wrap section ministry" key={m.id}>
+            <div className={`ministry-side ${MCOL[m.id]}`}>
+              <I size={34} />
+              <h2>{m.title}</h2>
+              <p className="tagline">{m.tagline}</p>
+              <p className="scripture">{/[\u201c"]/.test(m.scripture.text) ? m.scripture.text : `\u201c${m.scripture.text}\u201d`}</p>
+              <cite>{m.scripture.ref}</cite>
+            </div>
+            <div className="ministry-body">
+              {m.about.map((t) => <p key={t}>{t}</p>)}
+              <dl className="schedule">
+                {m.schedule.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+              </dl>
+              {m.news && <div className="callout"><b>{m.news.title}</b><span>{m.news.note}</span></div>}
+              {list.length > 0 && (<><h3>Upcoming</h3><EventList items={list} /></>)}
+            </div>
+          </section>
+        );
+      })}
+    </>
+  );
+}
 
 function Events() {
   const { items } = useCollection("Event", eventsFallback, "date");
@@ -402,7 +422,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="wrap foot-in">
-        <div><Logo width={230} mono /><p className="foot-note">Beverly Boulevard is a local church of The Foursquare Church.</p><b>{church.name}</b><p>{church.mission}</p></div>
+        <div><Logo width={230} /><p className="foot-note">Beverly Boulevard is a local church of The Foursquare Church.</p><b>{church.name}</b><p>{church.mission}</p></div>
         <div><b>Visit</b><p>{church.address.join(", ")}<br />Sundays 11:00 AM</p></div>
         <div><b>Contact</b><p>{church.phone}<br />{church.email}<br />Office: {church.office}</p></div>
       </div>

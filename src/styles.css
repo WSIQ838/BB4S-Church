@@ -15,7 +15,7 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --bg: #120e1a; --surface: #1c1726; --alt: #191422; --ink: #f6f0e2; --muted: #a9a1b8; --line: #2e2742; --lead: #d8d1e3;
-  --logo-cross: #f6f0e2; --logo-dove: #f6f0e2; --logo-cup: #f6f0e2; --logo-crown: #f6f0e2;
+  --logo-cross: #ff2735; --logo-dove: #f8d562; --logo-cup: #34a7f7; --logo-crown: #b67ee7;
   --red-text: #ff8088; --btn-bg: #f6f0e2; --btn-fg: #1d1a24; --icon-cross: #ff6b75; --icon-dove: #f8d562; --icon-cup: #8794ff; --icon-crown: #b49cf0;
 }
 * { box-sizing: border-box; }
@@ -91,11 +91,6 @@ small { display: block; color: var(--muted); }
 .sq-yellow { background-color: var(--dove); color: #2a2100; } .sq-ink { background-color: var(--crown); }
 .squares.small { max-width: 380px; justify-self: end; width: 100%; }
 
-.marquee { background: var(--dove); color: #2a2100; overflow: hidden; white-space: nowrap; padding: 15px 0; font-family: var(--serif); font-style: italic; font-size: 1.25rem; }
-.marquee div { display: inline-block; animation: slide 34s linear infinite; }
-@keyframes slide { to { transform: translateX(-50%); } }
-/* Scrolls for everyone (even with "Reduce motion" on). Hover or tap-and-hold pauses it. */
-.marquee:hover div, .marquee:active div { animation-play-state: paused; }
 
 .bento { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(200px, auto); gap: 18px; padding: 72px 0 8px; }
 .tile { border-radius: var(--radius); padding: 30px; background: var(--alt); border: 1px solid var(--line); text-decoration: none; display: flex; flex-direction: column; justify-content: flex-end; transition: transform .2s, box-shadow .2s; }
@@ -240,3 +235,27 @@ main > .section.info-row { padding-top: 48px; align-items: start; }
 .foot-note { font-size: .85rem; margin-bottom: 18px; }
 .sq svg { display: block; }
 .foot-in > div + div { padding-top: 0; }
+
+/* ministries page: full details from the old site */
+.ministry { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 40px; align-items: start; }
+.ministry-side { border-radius: var(--radius); padding: 36px; color: #fff; background-image: linear-gradient(155deg, rgba(255,255,255,.2), transparent 55%); position: sticky; top: 130px; }
+.ministry-side.sq-yellow { color: #2a2100; }
+.ministry-side h2 { margin: 18px 0 6px; }
+.ministry-side .tagline { font-weight: 800; letter-spacing: .02em; opacity: .95; }
+.ministry-side .scripture { font-family: var(--serif); font-style: italic; font-size: 1.25rem; line-height: 1.4; margin: 22px 0 8px; }
+.ministry-side cite { font-style: normal; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: .74rem; opacity: .9; }
+.ministry-body p { font-size: 1.08rem; max-width: 62ch; }
+.schedule { margin: 28px 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.schedule > div { display: grid; grid-template-columns: 190px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.schedule dt { font-weight: 800; color: var(--red-text); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; padding-top: 3px; }
+.schedule dd { margin: 0; }
+.callout { background: var(--alt); border: 1px solid var(--line); border-left: 5px solid var(--cross); border-radius: 14px; padding: 18px 22px; margin: 0 0 28px; display: grid; gap: 4px; }
+.ministry-body h3 { margin: 28px 0 12px; }
+@media (max-width: 900px) {
+  .ministry { grid-template-columns: 1fr; gap: 24px; }
+  .ministry-side { position: static; padding: 28px; }
+  .schedule > div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* footer is always dark: colour logo with the brighter brand supporting colours */
+.footer { --logo-cross: #ff2735; --logo-dove: #f8d562; --logo-cup: #34a7f7; --logo-crown: #b67ee7; }
