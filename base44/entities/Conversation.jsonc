@@ -1,0 +1,63 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Name of the group or channel (empty for a direct message)"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "group",
+        "all"
+      ],
+      "default": "group",
+      "description": "direct = 2 people, group = chosen people, all = everyone on the team"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of the people in it"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview of the latest message"
+    },
+    "last_at": {
+      "type": "string",
+      "description": "When the latest message was sent"
+    }
+  },
+  "required": [
+    "members"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "read": {
+      "data.members": "{{user.email}}"
+    },
+    "update": {
+      "data.members": "{{user.email}}"
+    },
+    "delete": {
+      "data.members": "{{user.email}}"
+    }
+  }
+}

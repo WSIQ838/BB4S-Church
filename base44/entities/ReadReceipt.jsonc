@@ -1,0 +1,36 @@
+{
+  "name": "ReadReceipt",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "Conversation"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Whose marker this is"
+    },
+    "last_read": {
+      "type": "string",
+      "description": "Time they last read it"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "user_email"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}

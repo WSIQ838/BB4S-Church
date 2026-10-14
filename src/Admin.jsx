@@ -2,6 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Trash2, Lock, LogOut, Check, Mail, Phone } from "lucide-react";
 import { base44, currentUser } from "./api.js";
 import { FIELDS } from "./content.jsx";
+import Messages from "./Messages.jsx";
+import EmailStaff from "./EmailStaff.jsx";
+
+const PEOPLE = { entity: "StaffMember", label: "Staff & volunteers", sort: "name", title: (r) => r.name, sub: (r) => [r.team_role, r.email, r.ministries].filter(Boolean).join(" · "),
+  fields: [["name", "Name", "text", true], ["email", "Sign-in email", "email", true], ["team_role", "Role", "select", true, ["Volunteer", "Ministry leader", "Staff", "Pastor"]], ["ministries", "Ministries (optional)"]] };
 
 const SECTIONS = [
   { entity: "Sermon", label: "Sermons", sort: "-date", title: (r) => r.title, sub: (r) => [r.date, r.speaker, r.series].filter(Boolean).join(" · "),
@@ -161,7 +166,7 @@ function SiteEditor() {
   );
 }
 
-function Manager({ section }) {
+function Manager({ section, onChanged }) {
   const [rows, setRows] = useState([]);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -173,20 +178,21 @@ function Manager({ section }) {
 
   const add = async (e) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const form = e.currentTarget;          // keep a reference: it's gone once the save starts
+    const f = new FormData(form);
     const data = {};
     for (const [k, , type] of section.fields) {
       const v = f.get(k);
       if (v !== "" && v != null) data[k] = type === "number" ? Number(v) : v;
     }
     setBusy(true);
-    try { await base44.entities[section.entity].create(data); e.currentTarget.reset(); await load(); }
+    try { await base44.entities[section.entity].create(data); form.reset(); await load(); onChanged?.(); }
     catch (e2) { setErr("Couldn't save. " + (e2?.message || "")); }
     setBusy(false);
   };
   const remove = async (r) => {
     if (!window.confirm("Delete this item?")) return;
-    try { await base44.entities[section.entity].delete(r.id); await load(); }
+    try { await base44.entities[section.entity].delete(r.id); await load(); onChanged?.(); }
     catch (e) { setErr("Couldn't delete. " + (e?.message || "")); }
   };
 
@@ -195,8 +201,10 @@ function Manager({ section }) {
       {!section.readOnly && (
         <form className="form admin-form" onSubmit={add}>
           <h3>Add to {section.label.toLowerCase()}</h3>
-          {section.fields.map(([k, label, type = "text", req]) => (
-            <label key={k}>{label}<input name={k} type={type} required={!!req} /></label>
+          {section.fields.map(([k, label, type = "text", req, opts]) => (
+            <label key={k}>{label}
+              {type === "select" ? <select name={k} required={!!req}>{opts.map((o) => <option key={o}>{o}</option>)}</select> : <input name={k} type={type} required={!!req} />}
+            </label>
           ))}
           <button className="btn btn-red" disabled={busy}>{busy ? "Saving…" : "Add"}</button>
         </form>
@@ -217,41 +225,79 @@ function Manager({ section }) {
 
 export default function Admin() {
   const [user, setUser] = useState(undefined);
-  const [tab, setTab] = useState(0);            // 0 = Inbox, 1 = Website text, then the content sections
+  const [team, setTeam] = useState(null);           // staff & volunteers list (null = loading)
+  const [tab, setTab] = useState("messages");
   const [newCount, setNewCount] = useState(0);
+  const [unread, setUnread] = useState(0);
   useEffect(() => { currentUser().then(setUser); }, []);
 
-  if (user === undefined) return <section className="wrap section"><p>Loading…</p></section>;
+  const loadTeam = useCallback(async () => {
+    try { setTeam(await base44.entities.StaffMember.list("name", 500)); } catch { setTeam([]); }
+  }, []);
+  useEffect(() => { if (user) loadTeam(); }, [user, loadTeam]);
+
+  // keep the "Everyone" channel in step with the staff list
+  const syncEveryone = useCallback(async () => {
+    try {
+      const list = await base44.entities.StaffMember.list("name", 500);
+      setTeam(list);
+      const all = (await base44.entities.Conversation.list("-last_at", 100)).find((c) => c.kind === "all");
+      if (!all) return;
+      const members = [...new Set([user.email, ...list.map((t) => t.email)])];
+      if (members.length !== all.members.length || members.some((m) => !all.members.includes(m))) await base44.entities.Conversation.update(all.id, { members });
+    } catch { /* the list still updated */ }
+  }, [user]);
+
+  if (user === undefined || (user && team === null)) return <section className="wrap section"><p>Loading…</p></section>;
   if (!user) {
     return (
       <section className="wrap section narrow">
-        <div className="info-card"><Lock /><h3>Staff sign-in</h3><p>Sign in to add sermons and events and read prayer requests.</p>
+        <div className="info-card"><Lock /><h3>Staff sign-in</h3><p>Sign in with the email an admin added for you, to use team messages{" "}and, for admins, to manage the website.</p>
           <button className="btn btn-red" onClick={() => base44.auth.redirectToLogin(window.location.href)}>Sign in</button></div>
       </section>
     );
   }
-  if (user.role !== "admin") {
+  const isAdmin = user.role === "admin";
+  const me = { ...user, ...(team.find((t) => t.email?.toLowerCase() === user.email?.toLowerCase()) || {}) };
+  const onTeam = isAdmin || team.some((t) => t.email?.toLowerCase() === user.email?.toLowerCase());
+  if (!onTeam) {
     return (
       <section className="wrap section narrow">
-        <div className="info-card"><Lock /><h3>Not an admin</h3><p>{user.email} doesn't have staff access. Ask the site owner to make you an admin.</p>
+        <div className="info-card"><Lock /><h3>You're signed in, but not on the team list</h3><p>{user.email} hasn't been added yet. Ask an admin to add this email under "Staff & volunteers".</p>
           <button className="btn btn-line" onClick={() => base44.auth.logout(window.location.href)}>Sign out</button></div>
       </section>
     );
   }
+
+  const tabs = isAdmin
+    ? [
+        { id: "inbox", label: "Inbox", badge: newCount },
+        { id: "messages", label: "Messages", badge: unread },
+        { id: "email", label: "Email" },
+        { id: "site", label: "Website text" },
+        { id: "people", label: "Staff & volunteers" },
+        ...SECTIONS.map((x) => ({ id: x.entity, label: x.label === "Team" ? "Team page" : x.label })),
+      ]
+    : [{ id: "messages", label: "Messages", badge: unread }];
+  const current = tabs.some((t) => t.id === tab) ? tab : "messages";
+
   return (
     <>
       <section className="wrap page-head">
-        <p className="kicker">Staff area</p>
-        <h1>Staff <em>area</em></h1>
+        <p className="kicker">{isAdmin ? "Staff area" : "Team area"}</p>
+        <h1>{isAdmin ? <>Staff <em>area</em></> : <>Team <em>messages</em></>}</h1>
         <p className="lead">Signed in as {user.email}. <button className="link-btn" onClick={() => base44.auth.logout(window.location.href)}><LogOut size={14} /> Sign out</button></p>
       </section>
       <section className="wrap section">
         <div className="tabs">
-          <button className={tab === 0 ? "on" : ""} onClick={() => setTab(0)}>Inbox{newCount > 0 && <span className="badge">{newCount}</span>}</button>
-          <button className={tab === 1 ? "on" : ""} onClick={() => setTab(1)}>Website text</button>
-          {SECTIONS.map((s, i) => <button key={s.entity} className={i + 2 === tab ? "on" : ""} onClick={() => setTab(i + 2)}>{s.label}</button>)}
+          {tabs.map((t) => <button key={t.id} className={t.id === current ? "on" : ""} onClick={() => setTab(t.id)}>{t.label}{t.badge > 0 && <span className="badge">{t.badge}</span>}</button>)}
         </div>
-        {tab === 0 ? <Inbox onCount={setNewCount} /> : tab === 1 ? <SiteEditor /> : <Manager key={SECTIONS[tab - 2].entity} section={SECTIONS[tab - 2]} />}
+        {isAdmin && <div hidden={current !== "inbox"}><Inbox onCount={setNewCount} /></div>}
+        {isAdmin && current === "site" && <SiteEditor />}
+        {isAdmin && current === "email" && <EmailStaff me={me} team={team} />}
+        {isAdmin && current === "people" && <Manager key="people" section={PEOPLE} onChanged={syncEveryone} />}
+        {isAdmin && SECTIONS.map((x) => current === x.entity && <Manager key={x.entity} section={x} />)}
+        <div hidden={current !== "messages"}><Messages me={me} team={team.filter((t) => t.email)} isAdmin={isAdmin} onUnread={setUnread} /></div>
       </section>
     </>
   );

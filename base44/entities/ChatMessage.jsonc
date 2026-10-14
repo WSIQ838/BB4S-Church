@@ -1,0 +1,61 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "Which conversation this belongs to"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Who can read it (copied from the conversation)"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Who sent it"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Their name"
+    },
+    "body": {
+      "type": "string",
+      "description": "The message"
+    },
+    "announcement": {
+      "type": "boolean",
+      "default": false,
+      "description": "An announcement that also goes out by email"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "members",
+    "sender_email",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "$and": [
+        {
+          "data.members": "{{user.email}}"
+        },
+        {
+          "data.sender_email": "{{user.email}}"
+        }
+      ]
+    },
+    "read": {
+      "data.members": "{{user.email}}"
+    },
+    "update": {
+      "data.sender_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.sender_email": "{{user.email}}"
+    }
+  }
+}

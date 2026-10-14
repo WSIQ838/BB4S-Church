@@ -30,3 +30,9 @@ export const submit = (entity, data) => base44.entities[entity].create(data);
 export async function currentUser() {
   try { return await base44.auth.me(); } catch { return null; }
 }
+
+/** Send an email from the church (sender address is set in Base44 under email domains, e.g. no-reply@bb4square.org). */
+export const CHURCH_FROM_NAME = "Beverly Boulevard Foursquare Church";
+export async function sendEmail({ to, subject, body }) {
+  return base44.integrations.Core.SendEmail({ to, subject, body, from_name: CHURCH_FROM_NAME });
+}

@@ -1,0 +1,69 @@
+{
+  "name": "StaffMember",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Sign-in email (must match the account they log in with)"
+    },
+    "team_role": {
+      "type": "string",
+      "enum": [
+        "Pastor",
+        "Staff",
+        "Ministry leader",
+        "Volunteer"
+      ],
+      "default": "Volunteer",
+      "description": "Their role on the team"
+    },
+    "ministries": {
+      "type": "string",
+      "description": "Ministries they serve in"
+    },
+    "email_alerts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email them about new direct messages and announcements"
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
