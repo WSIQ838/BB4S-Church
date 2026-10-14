@@ -304,3 +304,19 @@ main > .section.info-row { padding-top: 48px; align-items: start; }
 .inbox-actions { display: flex; align-items: center; gap: 8px; flex: none; }
 .inbox-actions .btn { padding: 9px 16px; font-size: .85rem; margin: 0; }
 @media (max-width: 700px) { .inbox-item { flex-direction: column; } }
+
+/* website text editor */
+.site-editor { max-width: 860px; }
+.ok-msg { color: #1a7f4b; font-weight: 700; } [data-theme="dark"] .ok-msg { color: #6fe0a5; }
+.edit-group { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 14px; overflow: hidden; }
+.edit-group > summary { cursor: pointer; padding: 18px 22px; font-family: var(--serif); font-size: 1.3rem; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 12px; }
+.edit-group > summary::-webkit-details-marker { display: none; }
+.edit-group > summary::after { content: "+"; margin-left: auto; font-family: var(--sans); font-weight: 400; color: var(--muted); }
+.edit-group[open] > summary::after { content: "–"; }
+.dirty { font-family: var(--sans); font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; background: var(--dove); color: #2a2100; padding: 3px 10px; border-radius: 99px; }
+.edit-fields { display: grid; gap: 16px; padding: 4px 22px 24px; border-top: 1px solid var(--line); padding-top: 20px; }
+.edit-fields label { display: grid; gap: 6px; font-weight: 700; font-size: .92rem; }
+.edit-fields input, .edit-fields textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; font: 500 1rem var(--sans); background: var(--bg); color: var(--ink); }
+.edit-fields input:focus, .edit-fields textarea:focus { outline: none; border-color: var(--crown); }
+.edit-fields small { font-weight: 500; }
+.edit-actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }

@@ -3,7 +3,8 @@ import {
   Menu, X, Sun, Moon, MapPin, Clock, Phone, Mail, Play, Heart, HandHeart, Users, Baby,
   BookOpen, Radio, Send, ArrowUpRight, MessageSquare,
 } from "lucide-react";
-import { church, services, sermons as sermonsFallback, events as eventsFallback, ministries, team as teamFallback, beliefs } from "./data.js";
+import { sermons as sermonsFallback, events as eventsFallback, team as teamFallback } from "./data.js";
+import { SiteProvider, useSite } from "./content.jsx";
 import { useCollection, submit } from "./api.js";
 import Admin from "./Admin.jsx";
 import { Symbol, IconRow, Logo } from "./Brand.jsx";
@@ -50,6 +51,7 @@ const useTheme = () => {
 };
 
 function Header({ route }) {
+  const { church, services, beliefs, ministries, t } = useSite();
   const [theme, toggle] = useTheme();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [route]);
@@ -57,7 +59,7 @@ function Header({ route }) {
     <header className="header">
       <div className="topbar">
         <div className="wrap topbar-in">
-          <span><Clock size={14} /> Sundays 10 AM Bible Study · 11 AM Worship</span>
+          <span><Clock size={14} /> {t("church.topbar")}</span>
           <span className="tb-right">
             <a href={`tel:${church.phone}`}><Phone size={14} /> {church.phone}</a>
             <Link to="live"><Radio size={14} /> Watch live</Link>
@@ -101,6 +103,7 @@ function Countdown() {
 }
 
 function Home() {
+  const { church, services, beliefs, ministries, t } = useSite();
   const { items: sermons } = useCollection("Sermon", sermonsFallback);
   const { items: allEvents } = useCollection("Event", eventsFallback, "date");
   const events = upcoming(allEvents);
@@ -109,11 +112,11 @@ function Home() {
       <section className="hero">
         <div className="wrap hero-grid">
           <div className="hero-copy">
-            <p className="kicker">Montebello, California</p>
+            <p className="kicker">{t("home.kicker")}</p>
             <h1>Welcome <span className="circled"><em>home</em>
               <svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M20 70 C 10 25, 120 5, 215 14 C 290 22, 300 70, 235 98 C 160 125, 30 115, 18 72 C 14 55, 40 38, 80 30" /></svg>
             </span>.</h1>
-            <p className="lead">{church.tagline}. A Foursquare church family following Jesus together, and there's a seat for you.</p>
+            <p className="lead">{t("home.lead")}</p>
             <div className="cta">
               <Link to="visit" className="btn btn-red">Plan your visit <ArrowUpRight size={18} /></Link>
               <Link to="live" className="btn btn-line"><Play size={16} /> Watch live</Link>
@@ -121,7 +124,7 @@ function Home() {
           </div>
           <div className="hero-panel">
             <p className="kicker">Join us this Sunday</p>
-            <div className="big-time">11:00 <span>AM</span></div>
+            <div className="big-time">{t("home.time").replace(/\s*(AM|PM)$/i, "")} <span>{(t("home.time").match(/(AM|PM)$/i) || [""])[0]}</span></div>
             <p className="addr"><MapPin size={16} /> {church.address.join(", ")}</p>
             <Countdown />
             <a className="btn btn-red" href={church.mapUrl} target="_blank" rel="noreferrer">Get directions <ArrowUpRight size={18} /></a>
@@ -180,8 +183,8 @@ function Home() {
 
       <section className="wrap section">
         <div className="verse-block">
-          <p>"Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need."</p>
-          <cite>Hebrews 4:16</cite>
+          <p>&ldquo;{t("verse.text")}&rdquo;</p>
+          <cite>{t("verse.ref")}</cite>
         </div>
       </section>
     </>
@@ -217,6 +220,7 @@ const GRAD = { children: "sun", men: "sky", ladies: "ember" };
 const ICONS = { children: Baby, men: Users, ladies: Heart };
 const MCOL = { children: "sq-yellow", men: "sq-blue", ladies: "sq-coral" };
 function MinistryTiles() {
+  const { church, services, beliefs, ministries, t } = useSite();
   return ministries.map((m) => {
     const I = ICONS[m.id];
     return (
@@ -242,6 +246,7 @@ const PageHead = ({ title, sub, kicker }) => (
 );
 
 function About() {
+  const { church, services, beliefs, ministries, t } = useSite();
   const { items: team } = useCollection("TeamMember", teamFallback, "sort_order", 50);
   return (
     <>
@@ -249,7 +254,7 @@ function About() {
       <section className="wrap section two">
         <div className="prose">
           <h2>Welcome</h2>
-          <p>We are Beverly Boulevard Foursquare Church, a community committed to following Jesus and sharing His love with everyone around us. Each Sunday we gather for fellowship, uplifting worship and practical, Bible-centered teaching that helps you live your faith every day.</p>
+          <p>{t("about.welcome")}</p>
           <p>Learn more about the <a href="https://www.foursquare.org/" target="_blank" rel="noreferrer">International Church of the Foursquare Gospel</a>.</p>
         </div>
         <div className="squares small">
@@ -278,11 +283,12 @@ function About() {
 }
 
 function Visit() {
+  const { church, services, beliefs, ministries, t } = useSite();
   const items = [
-    [Clock, "When", "Adult Bible Study at 10 AM, Main Service at 11 AM."],
+    [Clock, "When", t("visit.when")],
     [MapPin, "Where", church.address.join(", ")],
-    [Baby, "Kids", "Nursery every Sunday. Littles & Middles for pre-K to 8th grade (except the first Sunday of the month). Safety is our top priority."],
-    [Radio, "Online", "Can't make it? Worship with us on the live stream."],
+    [Baby, "Kids", t("visit.kids")],
+    [Radio, "Online", t("visit.online")],
   ];
   return (
     <>
@@ -302,6 +308,7 @@ function Visit() {
 }
 
 function VisitForm() {
+  const { church, services, beliefs, ministries, t } = useSite();
   const [state, setState] = useState("idle");
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -326,6 +333,7 @@ function VisitForm() {
 }
 
 function Ministries() {
+  const { church, services, beliefs, ministries, t } = useSite();
   const { items } = useCollection("Event", eventsFallback, "date");
   const coming = upcoming(items);
   return (
@@ -388,7 +396,9 @@ function Sermons() {
   );
 }
 
-const Live = () => (
+const Live = () => {
+  const { church, services, beliefs, ministries, t } = useSite();
+  return (
   <>
     <PageHead kicker="Sundays 11 AM Pacific" title="Watch live" />
     <section className="wrap section">
@@ -396,9 +406,11 @@ const Live = () => (
       <a className="btn btn-coral" href={church.liveUrl} target="_blank" rel="noreferrer">Open the live page <ArrowUpRight size={18} /></a>
     </section>
   </>
-);
+  );
+};
 
 function FormPage({ kicker, title, sub, fields, button, entity }) {
+  const { church, services, beliefs, ministries, t } = useSite();
   const [state, setState] = useState("idle");
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -432,7 +444,9 @@ function FormPage({ kicker, title, sub, fields, button, entity }) {
   );
 }
 
-const Contact = () => (
+const Contact = () => {
+  const { church, services, beliefs, ministries, t } = useSite();
+  return (
   <>
     <FormPage entity="ContactMessage" kicker="Say hello" title="Contact us" sub="We'd love to hear from you." button="Send message"
       fields={[{ name: "name", label: "Name", required: true }, { name: "email", label: "Email", type: "email", required: true }, { name: "message", label: "Message", type: "textarea", required: true }]} />
@@ -442,9 +456,12 @@ const Contact = () => (
       <div><MapPin /><b>{church.address.join(", ")}</b><small>Office: {church.office}</small></div>
     </section>
   </>
-);
+  );
+};
 
-const Give = () => (
+const Give = () => {
+  const { church, services, beliefs, ministries, t } = useSite();
+  return (
   <>
     <PageHead kicker="Generosity" title="Give" sub="Your generosity changes lives." />
     <section className="wrap section grid3">
@@ -453,7 +470,8 @@ const Give = () => (
       <div className="info-card"><BookOpen /><h3>Mobile app</h3><p>Download our church app to give and stay connected.</p></div>
     </section>
   </>
-);
+  );
+};
 
 const Prayer = () => (
   <FormPage entity="PrayerRequest" kicker="We're listening" title="Prayer requests" sub="Are you in need of prayer? We would love to pray for you." button="Send request"
@@ -463,11 +481,12 @@ const Prayer = () => (
 );
 
 function Footer() {
+  const { church, services, beliefs, ministries, t } = useSite();
   return (
     <footer className="footer">
       <div className="wrap foot-in">
-        <div><Logo width={230} /><p className="foot-note">Beverly Boulevard is a local church of The Foursquare Church.</p><b>{church.name}</b><p>{church.mission}</p></div>
-        <div><b>Visit</b><p>{church.address.join(", ")}<br />Sundays 11:00 AM</p></div>
+        <div><Logo width={230} /><p className="foot-note">{t("footer.note")}</p><b>{church.name}</b><p>{church.mission}</p></div>
+        <div><b>Visit</b><p>{church.address.join(", ")}<br />{t("footer.sunday")}</p></div>
         <div><b>Contact</b><p>{church.phone}<br />{church.email}<br />Office: {church.office}</p></div>
       </div>
       <div className="wrap huge">BB4S</div>
@@ -478,8 +497,16 @@ function Footer() {
 
 const PAGES = { home: Home, about: About, visit: Visit, ministries: Ministries, events: Events, sermons: Sermons, live: Live, give: Give, contact: Contact, prayer: Prayer, admin: Admin };
 
-export default function App() {
+function AppInner() {
   const route = useRoute();
   const Page = PAGES[route] || Home;
   return (<><Header route={route} /><main><Page /></main><Footer /></>);
+}
+
+export default function App() {
+  return (
+    <SiteProvider>
+      <AppInner />
+    </SiteProvider>
+  );
 }
